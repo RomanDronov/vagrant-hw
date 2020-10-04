@@ -1,0 +1,23 @@
+<VirtualHost *:80>
+ServerAdmin admin@example.com
+ServerName example.com
+ServerAlias example.com
+DocumentRoot /var/www/html
+ErrorLog ${APACHE_LOG_DIR}/error.log
+CustomLog ${APACHE_LOG_DIR}/access.log combined
+<Directory "/var/www/html">
+Require all granted
+</Directory>
+</VirtualHost>
+</VirtualHost>
+<VirtualHost *:80>
+ServerAdmin admin@example.com
+ServerName test.com
+ServerAlias www.test.com
+DocumentRoot /var/www/domain.com/public_html
+ErrorLog ${APACHE_LOG_DIR}/error.log
+CustomLog ${APACHE_LOG_DIR}/access.log combined
+<Directory "/var/www/test.com">
+Require all granted
+</Directory>
+</VirtualHost>
