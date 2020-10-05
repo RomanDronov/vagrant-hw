@@ -10,6 +10,7 @@ sudo apt-get install -q -y python3-pip
 sudo apt-get install -q -y python-pip
 sudo apt-get install -q -y apache2 libapache2-mod-wsgi-py3
 sudo apt-get install -q -y libapache2-mod-wsgi
+sudo apt-get install -q -y apache2 openssl
 libapache2-mod-wsgi
 #sudo a2enmod cgi
 
@@ -31,6 +32,46 @@ mkdir -p /etc/apache2/modules
 
 # Add the Includes module
 a2enmod include
+#ssl cert
+domain=$1
+commonname=$domain
+country=GB
+state=Nottingham
+locality=Nottinghamshire
+organization=example.com
+organizationalunit=IT
+email=administrator@jamescoyle.net
+
+if [ -z "$domain" ]
+then
+    echo "Argument not present."
+    echo "Useage $0 [common name]"
+
+    exit 99
+fi
+
+echo "Generating key request for $domain"
+
+#Generate a key
+openssl genrsa -des3 -passout pass:$password -out $domain.key 2048 -noout
+
+#Create the request
+echo "Creating CSR"
+openssl req -new -key $domain.key -out $domain.csr -passin pass:$password \
+    -subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/emailAddress=$email"
+
+echo "---------------------------"
+echo "-----Below is your CSR-----"
+echo "---------------------------"
+echo
+cat $domain.csr
+
+echo
+echo "---------------------------"
+echo "-----Below is your Key-----"
+echo "---------------------------"
+echo
+cat $domain.key
 
 # Add Includes, AddType and AddOutputFilter directives
 mv /etc/apache2/sites-available/default /etc/apache2/sites-available/default.bak
