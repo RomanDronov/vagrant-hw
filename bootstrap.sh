@@ -5,8 +5,13 @@ apt-get update
 # install apache
 apt-get install -q -y apache2
 sudo apt-get install -q -y python3
-sudo apt-get install libapache2-mod-python
-sudo a2enmod cgi
+#sudo apt-get install libapache2-mod-python
+sudo apt-get install -q -y python3-pip
+sudo apt-get install -q -y python-pip
+sudo apt-get install -q -y apache2 libapache2-mod-wsgi-py3
+sudo apt-get install -q -y libapache2-mod-wsgi
+libapache2-mod-wsgi
+#sudo a2enmod cgi
 
 # /vagrant is shared by default
 # symlink that to /var/www
@@ -16,6 +21,7 @@ sudo a2enmod cgi
 sudo mkdir /etc/apache2/sites-available/default
 mkdir -p /var/www/test.com/public_html
 mkdir -p /var/www/test.com/cgi-bin
+mkdir -p /etc/apache2/modules
 
 
 ################################################################################
@@ -50,9 +56,13 @@ sudo a2enmod ssl
 sudo a2ensite example.com.conf
 sudo a2ensite test.com.conf
 sudo a2dissite 000-default.conf
-pip install bfa
-cd /vagrant/www/test.com
-python3 -m http.server --cgip > /dev/null 2>&1
+chgrp www-data /var/www/test.com
+chmod g+w /var/www/test.com
+cd /etc/apache2
+echo 'LoadModule wsgi_module modules/mod_wsgi.so' | sudo tee -a  apache2.conf
+#cd /vagrant/www/test.com
+#python3 -m http.server --cgip > /dev/null 2>&1
 sudo systemctl restart apache2
+journalctl -xn
 # smoke test
 # open a brower to http://127.0.0.1:8080 to test
